@@ -3,9 +3,6 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output-test url="file://$MODULE_DIR$/../../build/classes/test" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../build/generated/source/apt/test">
-      <sourceFolder url="file://$MODULE_DIR$/../../build/generated/source/apt/test" isTestSource="true" generated="true" />
-    </content>
     <content url="file://$MODULE_DIR$/../../src/test">
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
@@ -13,12 +10,9 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ObjPool_main" />
-    <orderEntry type="library" name="Gradle: com.koloboke:koloboke-impl-common-jdk8:1.0.0" level="project" />
     <orderEntry type="library" name="Gradle: org.jctools:jctools-core:1.2.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout:ObjectLayout:-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.koloboke:koloboke-compile:0.5.1" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
-    <orderEntry type="library" name="Gradle: com.koloboke:koloboke-api-jdk8:1.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout.ObjectLayout:ObjectLayout:-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout.ObjectLayout:ObjectLayout-benchmarks:-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout.ObjectLayout:ObjectLayout-examples:-SNAPSHOT" level="project" />
