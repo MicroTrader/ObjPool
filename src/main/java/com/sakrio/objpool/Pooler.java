@@ -72,21 +72,28 @@
 
 package com.sakrio.objpool;
 
+import org.ObjectLayout.CtorAndArgs;
+import org.ObjectLayout.Intrinsic;
+import org.ObjectLayout.IntrinsicObjects;
 import org.jctools.queues.SpscUnboundedArrayQueue;
 
+import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 /**
  * Created by sirinath on 26/08/2016.
  */
 public class Pooler<T> implements Supplier<T> {
+    private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+    @Intrinsic
     private final PoolThreadLocal<T> poolThreadLocal;
     private final Supplier<T> factory;
 
-    protected Pooler(final Supplier<T> factory, final int chunks, final int numInitObjs) {
+    public Pooler(final Supplier<T> factory, final int chunks, final int numInitObjs) {
         this.factory = factory;
 
-        poolThreadLocal = new PoolThreadLocal<T>(chunks);
+        poolThreadLocal = (PoolThreadLocal<T>) IntrinsicObjects.constructWithin(lookup, "poolThreadLocal", this, new CtorAndArgs(lookup, PoolThreadLocal.class, new Class[]{Integer.TYPE}, chunks)); // new PoolThreadLocal<T>(chunks);
 
         Pool<T> pool = poolThreadLocal.get();
         for (int i = 0; i < numInitObjs; i++)
@@ -106,7 +113,7 @@ public class Pooler<T> implements Supplier<T> {
         return next;
     }
 
-    public final void finished(final T obj) {
+    public final void returnToPool(final T obj) {
         poolThreadLocal.get().offer(obj);
     }
 

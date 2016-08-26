@@ -70,58 +70,41 @@
  * THE SOFTWARE.
  */
 
-group 'com.sakrio'
-version '0.1.0-SNAPSHOT'
+package com.sakrio.objpool;
 
-defaultTasks 'clean', 'build', 'install'
+import org.junit.Assert;
+import org.junit.Test;
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
+/**
+ * Created by sirinath on 26/08/2016.
+ */
+public class TestPooler {
+    @Test
+    public void getAndReturnMany() {
+        Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), 100, 10);
+        for (int i = 0; i < 1000; i++) {
+            Dummy d = pooler.get();
+            Assert.assertEquals(d.getaLong(), 0L);
+            d.setaLong(1L);
+            pooler.returnToPool(d);
+        }
 
-apply plugin: 'java'
+        for (int i = 0; i < 1000; i++) {
+            Dummy d = pooler.get();
+            Assert.assertEquals(d.getaLong(), 1L);
+            pooler.returnToPool(d);
+        }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+        pooler.trim(10);
 
-buildscript {
-    repositories {
-        maven { url 'http://repo.spring.io/plugins-release' }
-        maven { url 'https://plugins.gradle.org/m2/' }
+        for (int i = 0; i < 10; i++) {
+            Dummy d = pooler.get();
+            Assert.assertEquals(d.getaLong(), 1L);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            Dummy d = pooler.get();
+            Assert.assertEquals(d.getaLong(), 0L);
+        }
     }
-    dependencies {
-        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
-        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.8'
-    }
-}
-
-configure(allprojects) {
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
-    apply plugin: "net.ltgt.apt"
-}
-
-configure(allprojects) {
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
-}
-
-repositories {
-    mavenCentral()
-    maven { url "https://jitpack.io" }
-}
-
-dependencies {
-    provided 'com.koloboke:koloboke-compile:0.5.1'
-
-    compile 'com.koloboke:koloboke-impl-common-jdk8:1.0.0'
-    compile 'org.jctools:jctools-core:1.2.1'
-    compile 'com.github.ObjectLayout:ObjectLayout:-SNAPSHOT'
-
-    testCompile group: 'junit', name: 'junit', version: '4.11'
 }

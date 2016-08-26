@@ -72,29 +72,17 @@
 
 package com.sakrio.objpool;
 
-import java.util.function.Supplier;
-
 /**
  * Created by sirinath on 26/08/2016.
  */
-public class BasedPooledObj<T extends BasedPooledObj<T>> implements AutoCloseable {
-    private static final InternalMap<Class<?>, Pooler<?>> pool = InternalMap.withExpectedSize(10);
-    protected final Pooler<T> thisPool;
+public class Dummy {
+    private long aLong = 0;
 
-    protected BasedPooledObj(final Supplier<T> factory, final int chunks, final int numInitObjs) {
-        Class<T> clazz = (Class<T>) getClass();
-        Pooler<T> tmpPool = (Pooler<T>) pool.get(clazz);
-
-        if (tmpPool == null) {
-            tmpPool = new Pooler<T>(factory, chunks, numInitObjs);
-            pool.justPut(clazz, tmpPool);
-        }
-
-        thisPool = tmpPool;
+    public long getaLong() {
+        return aLong;
     }
 
-    @Override
-    public void close() throws Exception {
-        thisPool.finished((T) this);
+    public void setaLong(long aLong) {
+        this.aLong = aLong;
     }
 }
