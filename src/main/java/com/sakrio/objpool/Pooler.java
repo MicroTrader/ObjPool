@@ -107,7 +107,7 @@ public class Pooler<T> implements Supplier<T> {
 
         if (next == null) {
             next = factory.get();
-            pool.offer(next);
+            pool.add(next);
         }
 
         return next;

@@ -76,7 +76,10 @@ package com.sakrio.objpool;
  * Created by sirinath on 26/08/2016.
  */
 public class Dummy {
-    private long aLong = 0;
+    public static final long defaultVal = 0;
+    private static long count = 0;
+    private long ID = count++;
+    private long aLong = 0L;
 
     public long getaLong() {
         return aLong;
@@ -84,5 +87,14 @@ public class Dummy {
 
     public void setaLong(long aLong) {
         this.aLong = aLong;
+    }
+
+    public long getID() {
+        return ID;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ID: %d | Value: %d", getID(), getaLong());
     }
 }

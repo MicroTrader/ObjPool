@@ -73,38 +73,141 @@
 package com.sakrio.objpool;
 
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
+import java.util.ArrayList;
+
+import static com.sakrio.objpool.Dummy.defaultVal;
 
 /**
  * Created by sirinath on 26/08/2016.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestPooler {
+    private static final int initObjs = 10;
+    private static final int initBuff = 100;
+    private static final int trimSize = 15;
+    private static final long mutVal = 1;
+    private static final int mult = 2;
+    private static final Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), initBuff, initObjs);
+
     @Test
-    public void getAndReturnMany() {
-        Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), 100, 10);
-        for (int i = 0; i < 1000; i++) {
+    public void Test1_InitialObjectCreation() {
+        System.out.println("Test1_InitialObjectCreation");
+        System.out.println("===========================");
+
+        for (int i = 0; i < initBuff * mult; i++) {
             Dummy d = pooler.get();
-            Assert.assertEquals(d.getaLong(), 0L);
+
+            System.out.println("Default: " + d);
+
+            Assert.assertEquals("Pool has only the specified number of objects", i % initObjs, d.getID());
+
+            pooler.returnToPool(d);
+        }
+    }
+
+    @Test
+    public void Test2_MoreObjectCreationThanBuffer() {
+        System.out.println("Test2_MoreObjectCreationThanBuffer");
+        System.out.println("==================================");
+
+        ArrayList<Dummy> arrayList = new ArrayList<>();
+
+        for (int i = 0; i < initBuff * mult; i++) {
+            Dummy d = pooler.get();
+
+            System.out.println("Default: " + d);
+
+            Assert.assertEquals("Pool has objects with default value", defaultVal, d.getaLong());
             d.setaLong(1L);
+
+            System.out.println("Mutated: " + d);
+
+            Assert.assertNotEquals("The pool object is mutated", defaultVal, d.getaLong());
+            arrayList.add(d);
+        }
+
+        for (Dummy d : arrayList) {
+            System.out.println("Returning: " + d);
             pooler.returnToPool(d);
         }
+    }
 
-        for (int i = 0; i < 1000; i++) {
+    @Test
+    public void Test3_PoolRetainsCreatedObjects() {
+        System.out.println("Test3_PoolRetainsCreatedObjects");
+        System.out.println("===============================");
+
+        for (int i = 0; i < initBuff * mult; i++) {
             Dummy d = pooler.get();
-            Assert.assertEquals(d.getaLong(), 1L);
+
+            System.out.println(d);
+
+            Assert.assertEquals("The pool has object with new value", mutVal, d.getaLong());
             pooler.returnToPool(d);
         }
+    }
 
-        pooler.trim(10);
+    @Test
+    public void Test4A_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("Test4A_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
+        System.out.println("=====================================================");
 
-        for (int i = 0; i < 10; i++) {
+        pooler.trim(trimSize);
+
+        for (int i = 0; i < trimSize; i++) {
             Dummy d = pooler.get();
-            Assert.assertEquals(d.getaLong(), 1L);
+
+            System.out.println(d);
+
+            Assert.assertEquals("The pool has objects with mutated value up to the trimmed value", mutVal, d.getaLong());
+            pooler.returnToPool(d);
         }
+    }
 
-        for (int i = 0; i < 10; i++) {
+    @Test
+    public void Test4B_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("Test4B_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
+        System.out.println("=====================================================");
+
+        for (int i = 0; i < trimSize * mult; i++) {
             Dummy d = pooler.get();
-            Assert.assertEquals(d.getaLong(), 0L);
+
+            System.out.println(d);
+
+            Assert.assertNotEquals("All the pool objects are mutated", defaultVal, d.getaLong());
+            pooler.returnToPool(d);
+        }
+    }
+
+    @Test
+    public void Test4C_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("Test4C_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
+        System.out.println("=====================================================");
+
+        for (int i = 0; i < trimSize; i++) {
+            Dummy d = pooler.get();
+
+            System.out.println(d);
+
+            Assert.assertEquals("All the pool objects are mutated", mutVal, d.getaLong());
+        }
+    }
+
+    @Test
+    public void Test4D_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("Test4D_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
+        System.out.println("=====================================================");
+
+        for (int i = 0; i < trimSize; i++) {
+            Dummy d = pooler.get();
+
+            System.out.println(d);
+
+            Assert.assertEquals("The pool has object with default value after getting exiting values", defaultVal, d.getaLong());
         }
     }
 }
