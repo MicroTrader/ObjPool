@@ -83,7 +83,7 @@ import java.util.function.Supplier;
 /**
  * Created by sirinath on 26/08/2016.
  */
-public class Pooler<T> implements Supplier<T> {
+public final class Pooler<T> implements Supplier<T> {
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     @Intrinsic
@@ -93,22 +93,20 @@ public class Pooler<T> implements Supplier<T> {
     public Pooler(final Supplier<T> factory, final int chunks, final int numInitObjs) {
         this.factory = factory;
 
-        poolThreadLocal = (PoolThreadLocal<T>) IntrinsicObjects.constructWithin(lookup, "poolThreadLocal", this, new CtorAndArgs(lookup, PoolThreadLocal.class, new Class[]{Integer.TYPE}, chunks)); // new PoolThreadLocal<T>(chunks);
+        poolThreadLocal = (PoolThreadLocal<T>) IntrinsicObjects.constructWithin(lookup, "poolThreadLocal", this, new CtorAndArgs(lookup, PoolThreadLocal.class, new Class[]{Integer.TYPE}, chunks));  // new PoolThreadLocal<T>(chunks);
 
-        Pool<T> pool = poolThreadLocal.get();
+        final Pool<T> pool = poolThreadLocal.get();
         for (int i = 0; i < numInitObjs; i++)
             pool.offer(factory.get());
     }
 
     @Override
     public final T get() {
-        Pool<T> pool = poolThreadLocal.get();
-        T next = pool.poll();
+        final Pool<T> pool = poolThreadLocal.get();
+        final T next = pool.poll();
 
-        if (next == null) {
-            next = factory.get();
-            pool.add(next);
-        }
+        if (next == null)
+            return factory.get();
 
         return next;
     }
@@ -118,7 +116,7 @@ public class Pooler<T> implements Supplier<T> {
     }
 
     public final void trim(final int trimAt) {
-        Pool<T> pool = poolThreadLocal.get();
+        final Pool<T> pool = poolThreadLocal.get();
 
         while (pool.size() > trimAt) {
             pool.poll();

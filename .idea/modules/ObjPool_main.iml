@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: org.jctools:jctools-core:1.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.JCTools.JCTools:jctools-core:-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout:ObjectLayout:-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout.ObjectLayout:ObjectLayout:-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: com.github.ObjectLayout.ObjectLayout:ObjectLayout-benchmarks:-SNAPSHOT" level="project" />

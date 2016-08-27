@@ -79,7 +79,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
 
-import static com.sakrio.objpool.Dummy.defaultVal;
+import static com.sakrio.objpool.TestPooler.Dummy.defaultVal;
 
 /**
  * Created by sirinath on 26/08/2016.
@@ -91,17 +91,18 @@ public class TestPooler {
     private static final int trimSize = 15;
     private static final long mutVal = 1;
     private static final int mult = 2;
-    private static final Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), initBuff, initObjs);
+    private static Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), initBuff, initObjs);
 
     @Test
     public void Test1_InitialObjectCreation() {
+        System.out.println("===========================");
         System.out.println("Test1_InitialObjectCreation");
         System.out.println("===========================");
 
-        for (int i = 0; i < initBuff * mult; i++) {
+        for (int i = 0; i < initObjs * mult; i++) {
             Dummy d = pooler.get();
 
-            System.out.println("Default: " + d);
+            System.out.println(d);
 
             Assert.assertEquals("Pool has only the specified number of objects", i % initObjs, d.getID());
 
@@ -111,6 +112,7 @@ public class TestPooler {
 
     @Test
     public void Test2_MoreObjectCreationThanBuffer() {
+        System.out.println("==================================");
         System.out.println("Test2_MoreObjectCreationThanBuffer");
         System.out.println("==================================");
 
@@ -138,6 +140,7 @@ public class TestPooler {
 
     @Test
     public void Test3_PoolRetainsCreatedObjects() {
+        System.out.println("===============================");
         System.out.println("Test3_PoolRetainsCreatedObjects");
         System.out.println("===============================");
 
@@ -153,6 +156,7 @@ public class TestPooler {
 
     @Test
     public void Test4A_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("=====================================================");
         System.out.println("Test4A_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
         System.out.println("=====================================================");
 
@@ -170,6 +174,7 @@ public class TestPooler {
 
     @Test
     public void Test4B_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("=====================================================");
         System.out.println("Test4B_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
         System.out.println("=====================================================");
 
@@ -185,6 +190,7 @@ public class TestPooler {
 
     @Test
     public void Test4C_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("=====================================================");
         System.out.println("Test4C_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
         System.out.println("=====================================================");
 
@@ -199,6 +205,7 @@ public class TestPooler {
 
     @Test
     public void Test4D_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects() {
+        System.out.println("=====================================================");
         System.out.println("Test4D_TrimmingRetainsOnlyTheSpecifiedNumberOfObjects");
         System.out.println("=====================================================");
 
@@ -208,6 +215,30 @@ public class TestPooler {
             System.out.println(d);
 
             Assert.assertEquals("The pool has object with default value after getting exiting values", defaultVal, d.getaLong());
+        }
+    }
+
+    public static class Dummy {
+        public static final long defaultVal = 0;
+        private static long count = 0;
+        private long ID = count++;
+        private long aLong = 0L;
+
+        public long getaLong() {
+            return aLong;
+        }
+
+        public void setaLong(long aLong) {
+            this.aLong = aLong;
+        }
+
+        public long getID() {
+            return ID;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("ID: %d | Value: %d", getID(), getaLong());
         }
     }
 }
