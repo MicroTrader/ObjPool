@@ -188,7 +188,6 @@ repositories {
 
 dependencies {
     compile 'org.jctools:jctools-core:1.2.1'
-    compile 'com.github.ObjectLayout:ObjectLayout:854efb835f'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
