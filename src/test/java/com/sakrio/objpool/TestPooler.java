@@ -121,10 +121,11 @@ import static com.sakrio.objpool.TestPooler.Dummy.defaultVal;
 public class TestPooler {
     private static final int initObjs = 10;
     private static final int initBuff = 100;
+    private static final boolean isBatched = false;
     private static final int trimSize = 15;
     private static final long mutVal = 1;
     private static final int mult = 2;
-    private static Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), initBuff, initObjs);
+    private static Pooler<Dummy> pooler = new Pooler<>(() -> new Dummy(), isBatched, initBuff, initObjs);
 
     @Test
     public void Test1_InitialObjectCreation() {

@@ -115,24 +115,39 @@ import java.util.function.Supplier;
 public final class Pooler<T> implements Supplier<T> {
     private final PoolThreadLocal<T> poolThreadLocal;
     private final Supplier<T> factory;
+    private final int allocationBlockSize;
+    private final boolean isBatched;
 
-    public Pooler(final Supplier<T> factory, final int chunks, final int numInitObjs) {
+    public Pooler(final Supplier<T> factory, final boolean isBatched, final int initialPoolSize, final int allocationBlockSize) {
         this.factory = factory;
+        this.allocationBlockSize = allocationBlockSize;
+        this.isBatched = isBatched;
 
-        poolThreadLocal = new PoolThreadLocal<T>(chunks);
+        if (allocationBlockSize < 1)
+            throw new IllegalArgumentException("allocationBlockSize should be greater than 1 but found: " + allocationBlockSize);
+
+        poolThreadLocal = new PoolThreadLocal<T>(initialPoolSize);
 
         final Pool<T> pool = poolThreadLocal.get();
-        for (int i = 0; i < numInitObjs; i++)
+        for (int i = 0; i < allocationBlockSize; i++)
             pool.offer(factory.get());
     }
 
     @Override
     public final T get() {
         final Pool<T> pool = poolThreadLocal.get();
-        final T next = pool.poll();
+        T next = pool.poll();
 
-        if (next == null)
-            return factory.get();
+        if (next == null) {
+            if (isBatched) {
+                for (int i = 0; i < allocationBlockSize; i++) {
+                    next = factory.get();
+                    pool.offer(factory.get());
+                }
+            } else {
+                next = factory.get();
+            }
+        }
 
         return next;
     }
@@ -144,7 +159,7 @@ public final class Pooler<T> implements Supplier<T> {
     public final void trim(final int trimAt) {
         final Pool<T> pool = poolThreadLocal.get();
 
-        while (pool.size() > trimAt) {
+        for (int toTrim = pool.size() - trimAt; toTrim > 0; toTrim--) {
             pool.poll();
         }
     }
@@ -156,15 +171,15 @@ public final class Pooler<T> implements Supplier<T> {
     }
 
     private static final class PoolThreadLocal<O> extends ThreadLocal<Pool<O>> {
-        private final int chunks;
+        private final int allocationBlockSize;
 
-        public PoolThreadLocal(final int chunks) {
-            this.chunks = chunks;
+        public PoolThreadLocal(final int allocationBlockSize) {
+            this.allocationBlockSize = allocationBlockSize;
         }
 
         @Override
         protected Pool<O> initialValue() {
-            return new Pool<O>(chunks);
+            return new Pool<O>(allocationBlockSize);
         }
     }
 }
